@@ -1,13 +1,8 @@
 import requests
-from dotenv import load_dotenv
 import os
 import discord
 
-load_dotenv()
-
-TWITTER_BEARER_TOKEN = os.getenv("TWITTER_BEARER_TOKEN")
 TWITTER_ACCOUNT = "fabriciofes"  # Substitua pelo seu usuário do Twitter
-DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 DISCORD_CHANNEL_ID = 847553861035884548  # Substitua pelo ID do canal do Discord
 
 intents = discord.Intents.default()
@@ -20,8 +15,9 @@ client = discord.Client(intents=intents)
 async def on_ready():
     print(f"We have logged in as {client.user}")
 
+    twitter_bearer_token = os.environ.get("TWITTER_BEARER_TOKEN")
     headers = {
-        "Authorization": f"Bearer {TWITTER_BEARER_TOKEN}"
+        "Authorization": f"Bearer {twitter_bearer_token}"
     }
 
     response = requests.get(f"https://api.twitter.com/2/users/me/tweets", headers=headers)
@@ -37,4 +33,5 @@ async def on_ready():
     else:
         print(f"Erro ao obter tweets: {data}")
 
-client.run(DISCORD_TOKEN)
+discord_token = os.environ.get("DISCORD_TOKEN")
+client.run(discord_token)
