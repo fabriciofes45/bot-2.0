@@ -1,58 +1,40 @@
-import tweepy
-import discord
+import requests
+from dotenv import load_dotenv
 import os
+import discord
 
-# Configurações do Twitter
-TWITTER_API_KEY = os.environ['TWITTER_API_KEY']
-TWITTER_API_SECRET = os.environ['TWITTER_API_SECRET']
-TWITTER_ACCESS_TOKEN = os.environ['TWITTER_ACCESS_TOKEN']
-TWITTER_ACCESS_SECRET = os.environ['TWITTER_ACCESS_SECRET']
-TWITTER_ACCOUNT = "fabricio_fes"
+load_dotenv()
 
-# Configurações do Discord
-DISCORD_TOKEN = os.environ['DISCORD_TOKEN']
-DISCORD_CHANNEL_NAME = "geral"
+TWITTER_BEARER_TOKEN = os.getenv("TWITTER_BEARER_TOKEN")
+TWITTER_ACCOUNT = "fabriciofes"  # Substitua pelo seu usuário do Twitter
+DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
+DISCORD_CHANNEL_ID = 847553861035884548  # Substitua pelo ID do canal do Discord
 
-# Inicialização da API do Twitter
-auth = tweepy.OAuthHandler(TWITTER_API_KEY, TWITTER_API_SECRET)
-auth.set_access_token(TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_SECRET)
-twitter_api = tweepy.API(auth)
-
-# Inicialização do cliente do Discord
 intents = discord.Intents.default()
 intents.typing = False
 intents.presences = False
+
 client = discord.Client(intents=intents)
 
 @client.event
 async def on_ready():
-    print(f'Bot do Discord conectado como {client.user}')
+    print(f"We have logged in as {client.user}")
 
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
+    headers = {
+        "Authorization": f"Bearer {TWITTER_BEARER_TOKEN}"
+    }
 
-# Função para buscar os tweets da conta do Twitter e postar no canal do Discord
-async def post_tweets():
-    channel = discord.utils.get(client.get_all_channels(), name=DISCORD_CHANNEL_NAME)
-    
-    if channel is not None:
-        tweets = twitter_api.user_timeline(screen_name=TWITTER_ACCOUNT, count=5, tweet_mode="extended")
+    response = requests.get(f"https://api.twitter.com/2/users/me/tweets", headers=headers)
+    data = response.json()
+
+    if response.status_code == 200:
+        tweets = data.get("data", [])
         for tweet in tweets:
-            tweet_text = tweet.full_text
-            tweet_url = f"https://twitter.com/{TWITTER_ACCOUNT}/status/{tweet.id}"
+            tweet_text = tweet["text"]
+            tweet_url = f"https://twitter.com/{TWITTER_ACCOUNT}/status/{tweet['id']}"
+            channel = client.get_channel(DISCORD_CHANNEL_ID)
             await channel.send(f"Novo tweet: {tweet_text}\nLink: {tweet_url}")
     else:
-        print(f"Canal '{DISCORD_CHANNEL_NAME}' não encontrado.")
+        print(f"Erro ao obter tweets: {data}")
 
-@client.event
-async def on_ready():
-    try:
-        print(f"We have logged in as {client.user}")
-        print(f'Bot do Discord conectado como {client.user}')
-        await post_tweets()  # Chama a função para buscar e postar tweets ao iniciar
-    except Exception as e:
-        print(f"An error occurred in on_ready: {e}")
-# Executa o bot do Discord
 client.run(DISCORD_TOKEN)

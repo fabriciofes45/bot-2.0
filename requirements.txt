@@ -1,2 +1,3 @@
-tweepy
 discord.py
+requests
+python-dotenv
