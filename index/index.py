@@ -7,7 +7,7 @@ TWITTER_API_KEY = os.environ['TWITTER_API_KEY']
 TWITTER_API_SECRET = os.environ['TWITTER_API_SECRET']
 TWITTER_ACCESS_TOKEN = os.environ['TWITTER_ACCESS_TOKEN']
 TWITTER_ACCESS_SECRET = os.environ['TWITTER_ACCESS_SECRET']
-TWITTER_ACCOUNT = "conta_do_twitter"
+TWITTER_ACCOUNT = "fabricio_fes"
 
 # Configurações do Discord
 DISCORD_TOKEN = os.environ['DISCORD_TOKEN']
