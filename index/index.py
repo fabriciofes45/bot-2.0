@@ -3,16 +3,15 @@ import discord
 import os
 
 # Configurações do Twitter
-TWITTER_API_KEY = "SUA_API_KEY_AQUI"
-TWITTER_API_SECRET = "SEU_API_SECRET_AQUI"
-TWITTER_ACCESS_TOKEN = "SEU_ACCESS_TOKEN_AQUI"
-TWITTER_ACCESS_SECRET = "SEU_ACCESS_SECRET_AQUI"
-TWITTER_ACCOUNT = "xetdaspromocoes"
-# TWITTER_ACCOUNT = "conta_do_twitter"
+TWITTER_API_KEY = os.environ['TWITTER_API_KEY']
+TWITTER_API_SECRET = os.environ['TWITTER_API_SECRET']
+TWITTER_ACCESS_TOKEN = os.environ['TWITTER_ACCESS_TOKEN']
+TWITTER_ACCESS_SECRET = os.environ['TWITTER_ACCESS_SECRET']
+TWITTER_ACCOUNT = "conta_do_twitter"
 
 # Configurações do Discord
-DISCORD_TOKEN = "LQ0PHJx5ptXV0ddpli3U03yZCHfpvPfr"
-DISCORD_CHANNEL_NAME = "geral"
+DISCORD_TOKEN = os.environ['DISCORD_TOKEN']
+DISCORD_CHANNEL_NAME = "post"
 
 # Inicialização da API do Twitter
 auth = tweepy.OAuthHandler(TWITTER_API_KEY, TWITTER_API_SECRET)
@@ -42,14 +41,15 @@ async def post_tweets():
         tweets = twitter_api.user_timeline(screen_name=TWITTER_ACCOUNT, count=5, tweet_mode="extended")
         for tweet in tweets:
             tweet_text = tweet.full_text
-            tweet_url = f"https://twitter.com/{TWITTER_ACCOUNT}/status/1694347980457849342"
-            # tweet_url = f"https://twitter.com/{TWITTER_ACCOUNT}/status/{tweet.id}"
+            tweet_url = f"https://twitter.com/{TWITTER_ACCOUNT}/status/{tweet.id}"
             await channel.send(f"Novo tweet: {tweet_text}\nLink: {tweet_url}")
     else:
         print(f"Canal '{DISCORD_CHANNEL_NAME}' não encontrado.")
 
-# Executa o bot do Discord e posta os tweets no canal
-client.loop.create_task(post_tweets())
+@client.event
+async def on_ready():
+    print(f'Bot do Discord conectado como {client.user}')
+    await post_tweets()  # Chama a função para buscar e postar tweets ao iniciar
+
+# Executa o bot do Discord
 client.run(DISCORD_TOKEN)
-
-
