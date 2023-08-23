@@ -1,1 +1,1 @@
-worker: python nomedoarquivo.py
+worker: python index.py
