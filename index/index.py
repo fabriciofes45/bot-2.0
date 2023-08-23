@@ -11,7 +11,7 @@ TWITTER_ACCOUNT = "fabricio_fes"
 
 # Configurações do Discord
 DISCORD_TOKEN = os.environ['DISCORD_TOKEN']
-DISCORD_CHANNEL_NAME = "post"
+DISCORD_CHANNEL_NAME = "geral"
 
 # Inicialização da API do Twitter
 auth = tweepy.OAuthHandler(TWITTER_API_KEY, TWITTER_API_SECRET)
