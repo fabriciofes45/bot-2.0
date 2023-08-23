@@ -48,8 +48,11 @@ async def post_tweets():
 
 @client.event
 async def on_ready():
-    print(f'Bot do Discord conectado como {client.user}')
-    await post_tweets()  # Chama a função para buscar e postar tweets ao iniciar
-
+    try:
+        print(f"We have logged in as {client.user}")
+        print(f'Bot do Discord conectado como {client.user}')
+        await post_tweets()  # Chama a função para buscar e postar tweets ao iniciar
+    except Exception as e:
+        print(f"An error occurred in on_ready: {e}")
 # Executa o bot do Discord
 client.run(DISCORD_TOKEN)
